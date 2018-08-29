@@ -1,0 +1,16 @@
+{
+  "name": "slack_xkcdbot",
+  "version": "1.0.0",
+  "description": "Slackbot that returns xkcd comics",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "dotenv": "^6.0.0",
+    "slackbots": "^1.1.0"
+  }
+}
