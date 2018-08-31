@@ -13,9 +13,9 @@ const bot = new SlackBot({
 bot.on('start', () => {
     const params = {
         icon_emoji: ':bowtie:'
-    }
+    };
 
-    bot.postMessageToChannel('general', 'Provides a daily dose of xkcd humor! Enter "@xkcd help" to learn more', params);
+    bot.postMessageToChannel('general', 'Provides a daily dose of xkcd humor! Type @xkcdbot followed by "help" to learn more', params);
 });
 
 // Error Handler
@@ -24,29 +24,37 @@ bot.on('error', (err) => console.log(err));
 // Message Handler
 bot.on('message', (data) => {
     if(data.type !== 'message') {
-        provideInput();
+        return;
+    }
+    if(data.subtype === 'bot_message') {
+        return;
     }
     else {
         handleMessage(data.text);
     }
 });
 
-// Respon
+// Response
 function handleMessage(message) {
     if(message.includes(' recent')) {
         recentComic();
     }
 
-    if(message.includes(' random')) {
+    else if(message.includes(' random')) {
         randomComic();
     }
 
-    if(message.includes(' help')) {
+    else if(message.includes(' help')) {
         help();
+    }
+
+    else {
+        invalid();
     }
 }
 
 function recentComic() {
+    console.log("recentComic");
     axios.get('http://xkcd.com/info.0.json')
      .then(res => {
          const image = res.data.img;
@@ -61,30 +69,37 @@ function recentComic() {
 }
 
 function randomComic() {
-    var randomNum = Math.random();
-    axios.get(`http://xkcd.com/info.${randomNum}.json`)
+    console.log("randomComic");
+    var randomNum = Math.floor(Math.random() * Math.floor(4000))+1;
+    console.log(randomNum);
+    axios.get(`http://xkcd.com/${randomNum}/info.0.json`)
      .then(res => {
          const image = res.data.img;
          const title = res.data.title;
 
-     const params = {
-        icon_emoji: ':bowtie:'
-    };
-
-    bot.postMessageToChannel('general', `${title}: ${image}`, params);
-    })
+         const params = {
+            icon_emoji: ':bowtie:'
+        };
+    
+        bot.postMessageToChannel('general', `${title}: ${image}`, params);
+     })
+     .catch(error => {
+        randomComic();
+     })
 }
 
-function recentComic() {
-    axios.get('http://xkcd.com/info.0.json')
-     .then(res => {
-         const image = res.data.img;
-         const title = res.data.title;
-
+function help() {
      const params = {
         icon_emoji: ':bowtie:'
     };
 
-    bot.postMessageToChannel('general', `${title}: ${image}`, params);
-    })
+    bot.postMessageToChannel('general', 'Type @xkcdbot followed by "recent" or "random" to get a comic!', params);
+}
+
+function invalid() {
+    const params = {
+        icon_emoji: ':bowtie:'
+    };
+
+    bot.postMessageToChannel('general', 'Invalid Message. Please type @xkcdbot followed by "help" to learn the commands', params);
 }
