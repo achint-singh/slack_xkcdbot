@@ -36,6 +36,10 @@ bot.on('message', (data) => {
 
 // Response
 function handleMessage(message) {
+    if(message === null) {
+        invalid();
+    }
+    
     if(message.includes(' recent')) {
         recentComic();
     }
@@ -54,7 +58,6 @@ function handleMessage(message) {
 }
 
 function recentComic() {
-    console.log("recentComic");
     axios.get('http://xkcd.com/info.0.json')
      .then(res => {
          const image = res.data.img;
@@ -69,7 +72,6 @@ function recentComic() {
 }
 
 function randomComic() {
-    console.log("randomComic");
     var randomNum = Math.floor(Math.random() * Math.floor(4000))+1;
     console.log(randomNum);
     axios.get(`http://xkcd.com/${randomNum}/info.0.json`)
